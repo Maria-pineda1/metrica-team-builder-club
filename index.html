@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Métrica Team Builder Club — Semestre II 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --gold-light:#F9E8A8;
+    --gold-mid:#E3B45E;
+    --gold-bronze:#A8763B;
+    --cream:#FDFBF6;
+    --row-alt:#F5F4F1;
+    --border:#EAE3CE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Montserrat',sans-serif;
+    background:var(--cream);
+    padding:32px 16px;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    background:#FFFFFF;
+    border-radius:16px;
+    overflow:hidden;
+    border:0.5px solid var(--border);
+    box-shadow:0 4px 24px rgba(0,0,0,0.06);
+  }
+  .header{
+    background:var(--black);
+    padding:24px 32px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    border-bottom:3px solid var(--gold-mid);
+  }
+  .header-text .eyebrow{
+    color:var(--gold-bronze);
+    font-size:11px;
+    letter-spacing:2px;
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .header-text .title{
+    color:#FFFFFF;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:0.3px;
+  }
+  .header-text .subtitle{
+    color:var(--gold-light);
+    font-size:13px;
+    font-weight:500;
+    margin-top:2px;
+  }
+
+  .tabs{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:18px 32px;
+    background:var(--cream);
+    border-bottom:0.5px solid var(--border);
+  }
+  .tab{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 18px;
+    border-radius:999px;
+    border:1.5px solid var(--gold-mid);
+    background:#FFFFFF;
+    font-size:13px;
+    font-weight:600;
+    color:var(--black);
+    cursor:pointer;
+    user-select:none;
+    transition:all .15s ease;
+  }
+  .tab .ic{font-size:14px;}
+  .tab:hover{background:var(--gold-light);}
+  .tab.active{
+    background:var(--black);
+    color:var(--gold-light);
+    border-color:var(--black);
+  }
+
+  .toolbar{
+    padding:14px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    background:#FFFFFF;
+  }
+  .legend{
+    display:flex;
+    gap:18px;
+    font-size:12px;
+    color:#555;
+    font-weight:500;
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .dot.gold{background:var(--gold-mid);}
+  .dot.empty{background:#E4E1D8;border:1px solid #d6d2c4;}
+  .hint{font-size:11.5px;color:#999;font-style:italic;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+  }
+  thead th{
+    background:#FFFFFF;
+    color:var(--black);
+    font-weight:700;
+    text-align:left;
+    padding:14px 16px;
+    border-bottom:2px solid var(--black);
+    white-space:nowrap;
+  }
+  thead th.center, tbody td.center{text-align:center;}
+  tbody tr{border-bottom:1px solid var(--border);}
+  tbody tr:nth-child(even){background:var(--row-alt);}
+  tbody tr.perfect{
+    box-shadow:inset 4px 0 0 var(--gold-mid);
+    background:linear-gradient(90deg, rgba(249,232,168,0.35), transparent 40%);
+  }
+  tbody td{
+    padding:10px 16px;
+    color:#222;
+    vertical-align:middle;
+  }
+  .manager{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    color:var(--black);
+  }
+  .avatar{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--black);
+    color:var(--gold-light);
+    font-size:12px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    border:1.5px solid var(--gold-mid);
+  }
+  .trophy{margin-left:6px;font-size:13px;}
+
+  .check{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    border:1px solid #DDD8C8;
+    background:#EFEDE6;
+    color:transparent;
+    transition:all .12s ease;
+  }
+  .check:hover{border-color:var(--gold-mid);}
+  .check.on{background:var(--black);color:var(--gold-mid);border-color:var(--black);}
+
+  input.txt{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    font-family:'Montserrat',sans-serif;
+    font-size:12.5px;
+    color:#555;
+    font-weight:500;
+    padding:6px 8px;
+    border-radius:6px;
+  }
+  input.txt:hover{border-color:var(--border);background:var(--cream);}
+  input.txt:focus{outline:none;border-color:var(--gold-mid);background:#FFFFFF;}
+  input.comment{color:var(--gold-bronze);font-weight:700;}
+
+  .badge{
+    display:inline-block;
+    min-width:40px;
+    text-align:center;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+  }
+  .badge.full{background:var(--black);color:var(--gold-light);}
+  .badge.partial{background:#EFEDE6;color:var(--black);}
+
+  .footer{
+    padding:14px 32px;
+    font-size:11px;
+    color:#999;
+    text-align:right;
+    background:var(--cream);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .save-note{color:var(--gold-bronze);font-weight:600;opacity:0;transition:opacity .3s ease;}
+  .save-note.show{opacity:1;}
+  .save-note.saving{color:#999;}
+  .save-note.error{color:#B23B3B;}
+
+  .loading-row td{
+    text-align:center;
+    padding:40px 16px;
+    color:#999;
+    font-style:italic;
+  }
+  .setup-warning{
+    margin:16px 32px;
+    padding:14px 16px;
+    background:#FDEEEE;
+    border:1px solid #E7B8B8;
+    border-radius:8px;
+    color:#8A2E2E;
+    font-size:12.5px;
+    line-height:1.5;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <svg width="46" height="46" viewBox="0 0 100 100" role="img" aria-label="Logo Team Builder">
+      <circle cx="50" cy="50" r="47" fill="#0A0A0A" stroke="#E3B45E" stroke-width="3"></circle>
+      <circle cx="50" cy="50" r="40" fill="none" stroke="#A8763B" stroke-width="1"></circle>
+      <text x="50" y="63" font-size="40" font-weight="700" fill="#F9E8A8" text-anchor="middle" font-family="Georgia, serif">TB</text>
+    </svg>
+    <div class="header-text">
+      <div class="eyebrow">TEAM BUILDER BY WINDMARHOME</div>
+      <div class="title">Métrica Team Builder Club</div>
+      <div class="subtitle">Semestre II</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="toolbar">
+    <span class="legend">
+      <span><span class="dot gold"></span> Cumplió</span>
+      <span><span class="dot empty"></span> Pendiente</span>
+    </span>
+    <span class="hint">Haz clic en los círculos para marcar ✓ y escribe directamente en Comentarios / Detalles</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Gerente</th>
+        <th class="center">Trainee Mensual</th>
+        <th class="center">Reunión Mensual</th>
+        <th class="center">2 Ventas Personales</th>
+        <th>Comentarios</th>
+        <th>Detalles</th>
+        <th class="center">Progreso</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div class="footer">
+    <span>Windmar en Acción · Team Builder Club</span>
+    <span class="save-note" id="saveNote">Guardado ✓</span>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// PEGA AQUÍ LA URL DE TU APLICACIÓN WEB DE GOOGLE APPS SCRIPT
+// (termina en /exec). Ver instrucciones en google_apps_script.gs
+// ============================================================
+const API_URL = "https://script.google.com/macros/s/AKfycbzmVo0bvanwyq2q9Orel6hxEOqjb7BY2cxYRXEmgZN0R_x4oOrUGy-JTbyKd3loXBSj/exec";
+
+const MONTHS = [
+  {key:"julio2026", label:"Julio 2026"},
+  {key:"agosto2026", label:"Agosto 2026"},
+  {key:"septiembre2026", label:"Septiembre 2026"},
+  {key:"octubre2026", label:"Octubre 2026"},
+  {key:"noviembre2026", label:"Noviembre 2026"},
+  {key:"diciembre2026", label:"Diciembre 2026"}
+];
+
+const MANAGERS = [
+  "Roberto Pacheco","Cesar Pacheco","Karina Bobe","Edwin Colon","David Fonseca",
+  "Norbert Cruz","Marie Lee Jaime","Ramonita Echevarria","Brayan Sanchez"
+];
+
+const REFRESH_INTERVAL_MS = 20000;
+
+function initials(name){
+  return name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+}
+
+function emptyMonthData(){
+  const d = {};
+  MANAGERS.forEach(m => d[m] = {c1:false, c2:false, c3:false, comment:"", detail:""});
+  return d;
+}
+
+function emptyState(){
+  const s = {};
+  MONTHS.forEach(m => s[m.key] = emptyMonthData());
+  return s;
+}
+
+function toBool(v){
+  return v === true || v === "TRUE" || v === "true";
+}
+
+async function loadData(){
+  const res = await fetch(API_URL);
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const rows = await res.json();
+  const data = emptyState();
+  rows.forEach(r => {
+    const month = MONTHS[r.MonthIndex];
+    const manager = r.Manager;
+    if(!month || !data[month.key] || !MANAGERS.includes(manager)) return;
+    data[month.key][manager] = {
+      c1: toBool(r.C1),
+      c2: toBool(r.C2),
+      c3: toBool(r.C3),
+      comment: r.Comment || "",
+      detail: r.Detail || ""
+    };
+  });
+  return data;
+}
+
+function setSaveNote(mode){
+  const note = document.getElementById("saveNote");
+  clearTimeout(window._saveTimeout);
+  note.classList.remove("saving","error");
+  if(mode === "saving"){
+    note.textContent = "Guardando...";
+    note.classList.add("show","saving");
+  } else if(mode === "error"){
+    note.textContent = "Error al guardar";
+    note.classList.add("show","error");
+  } else {
+    note.textContent = "Guardado ✓";
+    note.classList.add("show");
+    window._saveTimeout = setTimeout(()=>note.classList.remove("show"), 1200);
+  }
+}
+
+async function saveField(monthKey, manager, field, value){
+  setSaveNote("saving");
+  const monthIndex = MONTHS.findIndex(m => m.key === monthKey);
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify({monthIndex, manager, field, value})
+    });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const body = await res.json();
+    if(!body.ok) throw new Error(body.error || "error desconocido");
+    setSaveNote("done");
+  }catch(err){
+    console.error("Error guardando:", err);
+    setSaveNote("error");
+  }
+}
+
+let state = emptyState();
+let currentMonth = MONTHS[0].key;
+let dataReady = false;
+
+function renderTabs(){
+  const tabsEl = document.getElementById("tabs");
+  tabsEl.innerHTML = "";
+  MONTHS.forEach(m => {
+    const tab = document.createElement("div");
+    tab.className = "tab" + (m.key === currentMonth ? " active" : "");
+    tab.innerHTML = `<span class="ic">📅</span> ${m.label}`;
+    tab.onclick = () => { currentMonth = m.key; renderTabs(); renderTable(); };
+    tabsEl.appendChild(tab);
+  });
+}
+
+function renderLoadingRow(text){
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = `<tr class="loading-row"><td colspan="7">${text}</td></tr>`;
+}
+
+function isEditingInput(){
+  const active = document.activeElement;
+  return active && active.tagName === "INPUT" && active.closest("#tbody");
+}
+
+function renderTable(){
+  if(!dataReady){
+    renderLoadingRow("Cargando datos desde Google Sheets...");
+    return;
+  }
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+  const monthData = state[currentMonth];
+
+  MANAGERS.forEach(name => {
+    const row = monthData[name];
+    const total = (row.c1?1:0) + (row.c2?1:0) + (row.c3?1:0);
+    const isPerfect = total === 3;
+
+    const tr = document.createElement("tr");
+    if(isPerfect) tr.className = "perfect";
+
+    tr.innerHTML = `
+      <td><span class="manager"><span class="avatar">${initials(name)}</span>${name}${isPerfect ? '<span class="trophy">🏆</span>' : ''}</span></td>
+      <td class="center"><span class="check ${row.c1?'on':''}" data-field="c1">✓</span></td>
+      <td class="center"><span class="check ${row.c2?'on':''}" data-field="c2">✓</span></td>
+      <td class="center"><span class="check ${row.c3?'on':''}" data-field="c3">✓</span></td>
+      <td><input class="txt comment" data-field="comment" value="${row.comment}" placeholder=""></td>
+      <td><input class="txt" data-field="detail" value="${row.detail}" placeholder="ej. 5 ventas, 1 trainee"></td>
+      <td class="center"><span class="badge ${isPerfect?'full':'partial'}">${total}/3</span></td>
+    `;
+
+    tr.querySelectorAll(".check").forEach(el => {
+      el.onclick = () => {
+        const field = el.dataset.field;
+        row[field] = !row[field];
+        renderTable();
+        saveField(currentMonth, name, field, row[field]);
+      };
+    });
+
+    tr.querySelectorAll("input.txt").forEach(el => {
+      let debounceTimer;
+      const commit = () => saveField(currentMonth, name, el.dataset.field, row[el.dataset.field]);
+      el.addEventListener("input", () => {
+        row[el.dataset.field] = el.value;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(commit, 700);
+      });
+      el.addEventListener("blur", () => {
+        clearTimeout(debounceTimer);
+        commit();
+      });
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+async function init(){
+  if(API_URL === "PASTE_YOUR_WEB_APP_URL_HERE"){
+    renderLoadingRow("");
+    const warn = document.createElement("div");
+    warn.className = "setup-warning";
+    warn.innerHTML = "⚠️ Falta configurar la URL de Google Apps Script (constante <b>API_URL</b> en el HTML). Revisa google_apps_script.gs para las instrucciones.";
+    document.querySelector(".toolbar").insertAdjacentElement("afterend", warn);
+    return;
+  }
+
+  renderTabs();
+  renderLoadingRow("Cargando datos desde Google Sheets...");
+  try{
+    state = await loadData();
+    dataReady = true;
+    renderTable();
+  }catch(err){
+    console.error("Error cargando datos:", err);
+    renderLoadingRow("No se pudo conectar con Google Sheets. Revisa tu conexión o la URL configurada.");
+  }
+
+  setInterval(async () => {
+    if(isEditingInput()) return;
+    try{
+      state = await loadData();
+      renderTable();
+    }catch(err){
+      console.error("Error actualizando datos:", err);
+    }
+  }, REFRESH_INTERVAL_MS);
+}
+
+init();
+</script>
+</body>
+</html>

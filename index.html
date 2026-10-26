@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Métrica Team Builder Club — Semestre II 2026</title>
+<title>Métrica Team Builder Club — 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -61,11 +61,43 @@
 
   .tabs{
     display:flex;
-    gap:10px;
-    flex-wrap:wrap;
+    flex-direction:column;
+    gap:14px;
     padding:18px 32px;
     background:var(--cream);
     border-bottom:0.5px solid var(--border);
+  }
+  .sem-row,.month-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .month-row{
+    padding-left:14px;
+    border-left:3px solid var(--gold-mid);
+    animation:unfold .2s ease;
+  }
+  @keyframes unfold{
+    from{opacity:0;transform:translateY(-6px);}
+    to{opacity:1;transform:none;}
+  }
+  .tab.sem{
+    padding:10px 22px;
+    font-size:14px;
+    font-weight:700;
+    border-width:2px;
+  }
+  .tab.sem .chev{font-size:11px;transition:transform .15s ease;}
+  .tab.sem.open .chev{transform:rotate(90deg);}
+  .tab.sem.open{
+    background:var(--black);
+    color:var(--gold-light);
+    border-color:var(--black);
+  }
+  .tab.month-tab.active{
+    background:var(--gold-mid);
+    color:var(--black);
+    border-color:var(--gold-bronze);
   }
   .tab{
     display:inline-flex;
@@ -251,7 +283,7 @@
     <div class="header-text">
       <div class="eyebrow">TEAM BUILDER BY WINDMARHOME</div>
       <div class="title">Métrica Team Builder Club</div>
-      <div class="subtitle">Semestre II</div>
+      <div class="subtitle">Año 2026</div>
     </div>
   </div>
 
@@ -294,13 +326,26 @@
 // ============================================================
 const API_URL = "https://script.google.com/macros/s/AKfycbzmVo0bvanwyq2q9Orel6hxEOqjb7BY2cxYRXEmgZN0R_x4oOrUGy-JTbyKd3loXBSj/exec";
 
+// idx = número que se guarda en la columna MonthIndex de Google Sheets.
+// Julio-Diciembre ya existían (0-5), por eso Enero-Junio usan 6-11 aunque se muestren primero.
 const MONTHS = [
-  {key:"julio2026", label:"Julio 2026"},
-  {key:"agosto2026", label:"Agosto 2026"},
-  {key:"septiembre2026", label:"Septiembre 2026"},
-  {key:"octubre2026", label:"Octubre 2026"},
-  {key:"noviembre2026", label:"Noviembre 2026"},
-  {key:"diciembre2026", label:"Diciembre 2026"}
+  {key:"enero2026", label:"Enero 2026", idx:6},
+  {key:"febrero2026", label:"Febrero 2026", idx:7},
+  {key:"marzo2026", label:"Marzo 2026", idx:8},
+  {key:"abril2026", label:"Abril 2026", idx:9},
+  {key:"mayo2026", label:"Mayo 2026", idx:10},
+  {key:"junio2026", label:"Junio 2026", idx:11},
+  {key:"julio2026", label:"Julio 2026", idx:0},
+  {key:"agosto2026", label:"Agosto 2026", idx:1},
+  {key:"septiembre2026", label:"Septiembre 2026", idx:2},
+  {key:"octubre2026", label:"Octubre 2026", idx:3},
+  {key:"noviembre2026", label:"Noviembre 2026", idx:4},
+  {key:"diciembre2026", label:"Diciembre 2026", idx:5}
+];
+
+const SEMESTERS = [
+  {label:"Semestre I 2026", months:MONTHS.slice(0, 6)},
+  {label:"Semestre II 2026", months:MONTHS.slice(6, 12)}
 ];
 
 const MANAGERS = [
@@ -336,7 +381,7 @@ async function loadData(){
   const rows = await res.json();
   const data = emptyState();
   rows.forEach(r => {
-    const month = MONTHS[r.MonthIndex];
+    const month = MONTHS.find(m => m.idx === Number(r.MonthIndex));
     const manager = r.Manager;
     if(!month || !data[month.key] || !MANAGERS.includes(manager)) return;
     data[month.key][manager] = {
@@ -369,7 +414,7 @@ function setSaveNote(mode){
 
 async function saveField(monthKey, manager, field, value){
   setSaveNote("saving");
-  const monthIndex = MONTHS.findIndex(m => m.key === monthKey);
+  const monthIndex = MONTHS.find(m => m.key === monthKey).idx;
   try{
     const res = await fetch(API_URL, {
       method: "POST",
@@ -387,19 +432,46 @@ async function saveField(monthKey, manager, field, value){
 }
 
 let state = emptyState();
-let currentMonth = MONTHS[0].key;
+// Abre en el mes actual (si estamos en 2026); si no, en Enero.
+const _now = new Date();
+let currentMonth = (_now.getFullYear() === 2026 ? MONTHS[_now.getMonth()] : MONTHS[0]).key;
 let dataReady = false;
+
+function semesterOf(monthKey){
+  return SEMESTERS.find(s => s.months.some(m => m.key === monthKey));
+}
 
 function renderTabs(){
   const tabsEl = document.getElementById("tabs");
   tabsEl.innerHTML = "";
-  MONTHS.forEach(m => {
+  const openSem = semesterOf(currentMonth);
+
+  const semRow = document.createElement("div");
+  semRow.className = "sem-row";
+  SEMESTERS.forEach(s => {
     const tab = document.createElement("div");
-    tab.className = "tab" + (m.key === currentMonth ? " active" : "");
+    tab.className = "tab sem" + (s === openSem ? " open" : "");
+    tab.innerHTML = `<span class="chev">▶</span> ${s.label}`;
+    tab.onclick = () => {
+      if(s === openSem) return;
+      currentMonth = s.months[0].key;
+      renderTabs();
+      renderTable();
+    };
+    semRow.appendChild(tab);
+  });
+  tabsEl.appendChild(semRow);
+
+  const monthRow = document.createElement("div");
+  monthRow.className = "month-row";
+  openSem.months.forEach(m => {
+    const tab = document.createElement("div");
+    tab.className = "tab month-tab" + (m.key === currentMonth ? " active" : "");
     tab.innerHTML = `<span class="ic">📅</span> ${m.label}`;
     tab.onclick = () => { currentMonth = m.key; renderTabs(); renderTable(); };
-    tabsEl.appendChild(tab);
+    monthRow.appendChild(tab);
   });
+  tabsEl.appendChild(monthRow);
 }
 
 function renderLoadingRow(text){
